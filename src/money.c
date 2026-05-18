@@ -21,7 +21,7 @@ void returnmoney(int changeamount){
     printf("お釣 : %d\n",changeamount);
 }
 
-int money(struct VendingMachine* vm[MAX_PRODUCT_ID]){
+int money(struct VendingMachine* vm){
     int input = inputmoney(input);
 
     while(1){ 
@@ -34,7 +34,7 @@ int money(struct VendingMachine* vm[MAX_PRODUCT_ID]){
             return 0;
         }
 
-        change = changemoney(input,vm[ID]->price);
+        change = changemoney(input,&vm[ID-1].price);
         input = change;
     }
  
