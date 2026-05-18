@@ -5,8 +5,8 @@
 
 
 int main(void){
-
-struct VendingMachine vm[MAX_PRODUCT_ID];
+    
+    struct VendingMachine vm[MAX_PRODUCT_ID] = {0}; // 商品
 
     // メインメニュー
     while (1){
@@ -25,17 +25,19 @@ struct VendingMachine vm[MAX_PRODUCT_ID];
         switch (choice) {
             case 1:
                 // 商品販売モードの処理
-                money(&vm);
+                money(vm);
                 break;
 
             case 2:
                 // 商品管理モードの処理
-                loop(&vm);
+                loop(vm);
                 break;
 
             case 3:
                 // キャッシュクリアモードの処理
-
+                for (int i = 0; i < MAX_PRODUCT_ID; i++) {
+                    printf("商品ID: %d の在庫数: %d\n", i + 1, vm[i].stock);
+                }
                 break;
 
             case 4:
