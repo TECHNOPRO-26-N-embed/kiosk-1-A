@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include "constants.h"
 
-int loop(struct VendingMachine *vm[]) {
+int loop(struct VendingMachine *vm) {
 
     while (1) {
 
@@ -18,9 +18,9 @@ int loop(struct VendingMachine *vm[]) {
 
         // 商品IDが有効な場合の処理
         printf("商品ID: %d の在庫数を入力してください: ", scanNum);
-        scanf("%d", &vm[scanNum - 1]->stock);
+        scanf("%d", &vm[scanNum - 1].stock);
         printf("商品ID: %d の価格を入力してください: ", scanNum);
-        scanf("%d", &vm[scanNum - 1]->price);
+        scanf("%d", &vm[scanNum - 1].price);
     }
 
     return 1;
