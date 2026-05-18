@@ -1,7 +1,12 @@
 #include <stdio.h>
 #include "constants.h"
+#include "stockEntry.h"
+#include "money.h"
+
 
 int main(void){
+
+struct VendingMachine vm[MAX_PRODUCT_ID];
 
     // メインメニュー
     while (1){
@@ -20,12 +25,12 @@ int main(void){
         switch (choice) {
             case 1:
                 // 商品販売モードの処理
-
+                money(&vm);
                 break;
 
             case 2:
                 // 商品管理モードの処理
-
+                loop(&vm);
                 break;
 
             case 3:
