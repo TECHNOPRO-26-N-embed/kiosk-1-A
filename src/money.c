@@ -4,7 +4,7 @@
 int inputmoney(int inputamount){
     scanf("%d",&inputamount);
     //投入金額を表示
-    printf("%d\n",inputamount);
+    printf("投入金額 : %d\n",inputamount);
 
     return inputamount;
 }
@@ -18,7 +18,7 @@ int changemoney(int inputamount,int chooseamount){
 }
 //お釣返却
 void returnmoney(int changeamount){
-    printf("%d\n",changeamount);
+    printf("お釣 : %d\n",changeamount);
 }
 
 int money(struct VendingMachine* vm[MAX_PRODUCT_ID]){
