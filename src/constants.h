@@ -8,4 +8,13 @@
 
 #define EXITCODE (0)        // 入力などの終了コード
 
+struct VendingMachine{
+//種類ID,商品ID,料金,在庫数,合計金額
+int typeID;
+int productID;
+int price;
+int stock;
+int totalAmount;
+};
+
 #endif // CONSTANTS_H
