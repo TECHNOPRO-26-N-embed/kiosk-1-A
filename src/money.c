@@ -60,6 +60,7 @@ int money(struct VendingMachine* vm){
         printf("投入金額 : %d 円\n",input);
 
         change = changemoney(input, vm[ID - 1].price);
+
         input = change;
 
         vm[ID - 1].totalAmount += vm[ID - 1].price;
