@@ -8,6 +8,8 @@
 
 #define EXITCODE (0)        // 入力などの終了コード
 
+#define CHANGECODE (-1)     // お釣りを出すためのコード
+
 struct VendingMachine{
 //種類ID,商品ID,料金,在庫数,合計金額
 int typeID;
