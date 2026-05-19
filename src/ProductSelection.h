@@ -1,4 +1,4 @@
-void displayProductID(int productID);
-void displayProductName(const char* productName);
-void displayProductPrice(double price);
-void displayProductStock(int stock);
+#ifndef ProductSelection_H
+#define ProductSelection_H
+void displayProducts(struct VendingMachine products[], int size);
+#endif // ProductSelection_H
