@@ -4,7 +4,7 @@
 void displayProducts(struct VendingMachine products[]) {
     printf("商品ID\t種類ID\t値段\t在庫数\n");
     for (int i = 0; i < MAX_PRODUCT_ID; i++) {
-        printf("%d\t%s\t%d\t%d\n", products[i].productID, products[i].typeID, products[i].price, products[i].stock);
+        printf("%d\t%d\t%d\t%d\n", i + 1, products[i].typeID, products[i].price, products[i].stock);
     }
 }
 
