@@ -25,16 +25,19 @@ int main(void){
         switch (choice) {
             case 1:
                 // 商品販売モードの処理
+                printf("\n商品販売モードを選択しました。\n");
                 money(vm);
                 break;
 
             case 2:
                 // 商品管理モードの処理
+                printf("\n商品管理モードを選択しました。\n");
                 loop(vm);
                 break;
 
             case 3:
                 // キャッシュクリアモードの処理
+                printf("\nキャッシュクリアモードを選択しました。\n");
                 while (1) {
                     // 商品IDの入力
                     int scanNum;
