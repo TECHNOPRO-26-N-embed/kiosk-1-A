@@ -35,14 +35,29 @@ int main(void){
 
             case 3:
                 // キャッシュクリアモードの処理
-                for (int i = 0; i < MAX_PRODUCT_ID; i++) {
-                    printf("商品ID: %d の在庫数: %d\n", i + 1, vm[i].stock);
+                while (1) {
+                    // 商品IDの入力
+                    int scanNum;
+                    printf("キャッシュを消したい商品IDを入力してください (%d-%d)(終了するには%dを入力): ", MIN_PRODUCT_ID, MAX_PRODUCT_ID, EXITCODE);
+                    scanf("%d", &scanNum);
+                    if(scanNum == EXITCODE) break;
+                    
+                    if(scanNum < MIN_PRODUCT_ID || scanNum > MAX_PRODUCT_ID) {
+                        printf("無効な商品IDです。%dから%dの範囲で入力してください。\n", MIN_PRODUCT_ID, MAX_PRODUCT_ID);
+                        continue;
+                    }
+                    
+                    // 商品IDが有効な場合の処理
+                    vm[scanNum - 1].totalAmount = 0;
+                    printf("商品ID: %d のキャッシュをクリアしました。\n", scanNum);
                 }
                 break;
 
             case 4:
                 // トータル売り上げ表示の処理
-
+                for (int i = 0; i < MAX_PRODUCT_ID; i++) {
+                    printf("商品ID: %d のトータル売り上げ: %d\n", i + 1, vm[i].totalAmount);
+                }
                 break;
 
             case EXITCODE:
