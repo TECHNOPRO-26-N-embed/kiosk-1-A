@@ -30,29 +30,39 @@ void manageStock(void) {
     int newStock = ai_input_int("新しい在庫数を入力してください: ");
     ai_update_stock(products, productCount, id, newStock);
     printf("在庫を更新しました。\n");
+    ai_log_operation("在庫管理", "admin"); // 操作ログを記録
 }
 
 void viewSales(void) {
-    // まず確実に開けるよう通常の読み取りモードを使用
-    FILE* fp = fopen("src_ai/sales_ai.csv", "r");
+    FILE* fp = fopen("src_ai/sales_ai.csv", "r"); // 読み取りモード
     if (!fp) {
-        perror("売上履歴ファイルを開けませんでした");
-        return;
+        // ファイルがなければ新規作成
+        fp = fopen("src_ai/sales_ai.csv", "w");
+        if (!fp) {
+            perror("売上履歴ファイルを作成できませんでした");
+            return;
+        }
+        fclose(fp);
+        printf("売上履歴ファイルを新規作成しました。\n");
+        return; // 新規作成後は終了
     }
     char line[256];
+    int isEmpty = 1; // 空チェック用フラグ
     printf("==== 売上履歴 ====\n");
     while (fgets(line, sizeof(line), fp)) {
+        isEmpty = 0; // データが存在する場合フラグを下げる
 #ifdef _WIN32
-        int wlen = MultiByteToWideChar(CP_UTF8, 0, line, -1, NULL, 0);
+        // CP932からUTF-8に変換して表示
+        int wlen = MultiByteToWideChar(932, 0, line, -1, NULL, 0);
         if (wlen > 0) {
             wchar_t wbuf[256];
             if (wlen <= (int)(sizeof(wbuf) / sizeof(wbuf[0]))) {
-                MultiByteToWideChar(CP_UTF8, 0, line, -1, wbuf, wlen);
-                int slen = WideCharToMultiByte(932, 0, wbuf, -1, NULL, 0, NULL, NULL);
+                MultiByteToWideChar(932, 0, line, -1, wbuf, wlen);
+                int slen = WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, NULL, 0, NULL, NULL);
                 if (slen > 0) {
                     char sbuf[256 * 2];
                     if (slen <= (int)sizeof(sbuf)) {
-                        WideCharToMultiByte(932, 0, wbuf, -1, sbuf, slen, NULL, NULL);
+                        WideCharToMultiByte(CP_UTF8, 0, wbuf, -1, sbuf, slen, NULL, NULL);
                         printf("%s", sbuf);
                         continue;
                     }
@@ -62,21 +72,41 @@ void viewSales(void) {
 #endif
         printf("%s", line);
     }
+    if (isEmpty) {
+        printf("ログがありません\n");
+    }
     fclose(fp);
+    ai_log_operation("売上確認", "admin"); // 操作ログを記録
 }
 
 void viewLogs(void) {
     FILE* fp = fopen("src_ai/operation_log_ai.csv", "r");
     if (!fp) {
-        printf("操作ログファイルを開けませんでした。\n");
-        return;
+        // ファイルがなければ新規作成
+        fp = fopen("src_ai/operation_log_ai.csv", "w");
+        if (!fp) {
+            printf("操作ログファイルを作成できませんでした。\n");
+            return;
+        }
+        fclose(fp);
+        fp = fopen("src_ai/operation_log_ai.csv", "r");
+        if (!fp) {
+            printf("操作ログファイルを開けませんでした。\n");
+            return;
+        }
     }
     char line[256];
+    int isEmpty = 1; // 空チェック用フラグ
     printf("==== 操作ログ ====\n");
     while (fgets(line, sizeof(line), fp)) {
+        isEmpty = 0; // データが存在する場合フラグを下げる
         printf("%s", line);
     }
+    if (isEmpty) {
+        printf("ログがありません\n");
+    }
     fclose(fp);
+    ai_log_operation("ログ閲覧", "admin"); // 操作ログを記録
 }
 
 void runAdminService(void) {
