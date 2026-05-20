@@ -98,6 +98,318 @@
 | 想定外の入力や操作があった場合 | 「無効な入力です」と表示し、直前の画面またはメインメニューに戻す |
 | システムエラーや予期せぬ例外 | 「システムエラーが発生しました」と表示し、メインメニューに戻す |
 
+## 共通変数名リスト（プロジェクト全体）
+
+| 変数名 | 型（想定） | 用途 |
+| :--- | :--- | :--- |
+| productCount | int | 管理対象の商品数 |
+| maxProductCount | int | 取り扱い可能な最大商品数（要件上は50） |
+| maxStockPerProduct | int | 商品ごとの最大在庫数（要件上は50） |
+| selectedProductId | int | ユーザーが選択した商品ID |
+| selectedQuantity | int | ユーザーが選択した購入個数 |
+| unitPrice | int | 商品単価 |
+| insertedAmount | int | 投入金額 |
+| totalPrice | int | 合計金額（単価 x 個数） |
+| changeAmount | int | つり銭額 |
+| currentStock | int | 選択商品の現在在庫数 |
+| updatedStock | int | 更新後の在庫数 |
+| menuChoice | int | メニュー選択値 |
+| adminAuthenticated | int | 管理者認証結果（0:失敗, 1:成功） |
+| inputBuffer | char[] | キーボード入力の一時受け取り |
+| adminPasswordInput | char[] | 管理者パスワード入力値 |
+| salesCsvPath | const char* | 売上CSVファイルパス |
+| operationLogCsvPath | const char* | 操作ログCSVファイルパス |
+| productCsvPath | const char* | 商品・在庫データCSVファイルパス |
+| fileOpenOk | int | ファイルオープン成否（0:失敗, 1:成功） |
+| errorCode | int | エラー種別コード |
+
+## 機能ごとの関数一覧（引数・返り値コメント付き）
+
+### メイン制御
+
+```c
+int runMainLoop(void);
+// 引数: なし
+// 返り値: 終了ステータス（0:正常終了、0以外:異常終了）
+
+int showMainMenu(void);
+// 引数: なし
+// 返り値: ユーザーが選択したメニュー番号
+
+void handleMainMenuChoice(int menuChoice);
+// 引数: menuChoice - メインメニューの選択値
+// 返り値: なし
+```
+
+### 商品選択・購入
+
+```c
+int showProductList(void);
+// 引数: なし
+// 返り値: 表示処理結果（0:成功、0以外:失敗）
+
+int selectProductId(void);
+// 引数: なし
+// 返り値: 選択された商品ID（無効入力時は負値）
+
+int inputPurchaseQuantity(int selectedProductId);
+// 引数: selectedProductId - 対象商品ID
+// 返り値: 入力された購入個数（無効入力時は負値）
+
+int inputInsertedAmount(void);
+// 引数: なし
+// 返り値: 投入金額（無効入力時は負値）
+
+int canPurchase(int selectedProductId, int selectedQuantity, int insertedAmount);
+// 引数: selectedProductId - 対象商品ID
+//       selectedQuantity - 購入個数
+//       insertedAmount - 投入金額
+// 返り値: 購入可否（1:購入可能、0:購入不可）
+
+int calculateTotalPrice(int unitPrice, int selectedQuantity);
+// 引数: unitPrice - 商品単価
+//       selectedQuantity - 購入個数
+// 返り値: 合計金額
+
+int calculateChange(int insertedAmount, int totalPrice);
+// 引数: insertedAmount - 投入金額
+//       totalPrice - 合計金額
+// 返り値: つり銭額
+
+int executePurchase(int selectedProductId, int selectedQuantity, int insertedAmount);
+// 引数: selectedProductId - 対象商品ID
+//       selectedQuantity - 購入個数
+//       insertedAmount - 投入金額
+// 返り値: 購入処理結果（0:成功、0以外:失敗）
+```
+
+### 在庫管理
+
+```c
+int showStockList(void);
+// 引数: なし
+// 返り値: 表示処理結果（0:成功、0以外:失敗）
+
+int updateStock(int selectedProductId, int updatedStock);
+// 引数: selectedProductId - 更新対象の商品ID
+//       updatedStock - 更新後在庫数
+// 返り値: 更新処理結果（0:成功、0以外:失敗）
+
+int restockProduct(int selectedProductId, int addQuantity);
+// 引数: selectedProductId - 補充対象の商品ID
+//       addQuantity - 追加補充数
+// 返り値: 補充処理結果（0:成功、0以外:失敗）
+```
+
+### 管理者モード
+
+```c
+int authenticateAdmin(const char* adminPasswordInput);
+// 引数: adminPasswordInput - 入力された管理者パスワード
+// 返り値: 認証結果（1:成功、0:失敗）
+
+int showAdminMenu(void);
+// 引数: なし
+// 返り値: 管理者メニューの選択値
+
+void handleAdminMenuChoice(int menuChoice);
+// 引数: menuChoice - 管理者メニューの選択値
+// 返り値: なし
+```
+
+### 売上確認・ログ閲覧
+
+```c
+int loadSalesHistory(const char* salesCsvPath);
+// 引数: salesCsvPath - 売上CSVパス
+// 返り値: 読み込み結果（0:成功、0以外:失敗）
+
+int showSalesSummary(void);
+// 引数: なし
+// 返り値: 表示処理結果（0:成功、0以外:失敗）
+
+int loadOperationLog(const char* operationLogCsvPath);
+// 引数: operationLogCsvPath - 操作ログCSVパス
+// 返り値: 読み込み結果（0:成功、0以外:失敗）
+
+int showOperationLog(void);
+// 引数: なし
+// 返り値: 表示処理結果（0:成功、0以外:失敗）
+```
+
+### CSV入出力・記録
+
+```c
+int appendSalesRecord(int selectedProductId, int selectedQuantity, int unitPrice, int remainingStock);
+// 引数: selectedProductId - 購入商品ID
+//       selectedQuantity - 購入個数
+//       unitPrice - 商品単価
+//       remainingStock - 購入後在庫
+// 返り値: 書き込み結果（0:成功、0以外:失敗）
+
+int appendOperationLog(const char* actionLabel);
+// 引数: actionLabel - 操作内容ラベル
+// 返り値: 書き込み結果（0:成功、0以外:失敗）
+
+int saveProductMaster(void);
+// 引数: なし
+// 返り値: 保存処理結果（0:成功、0以外:失敗）
+```
+
+
+## クラス設計
+
+※ 本システムはC言語実装のため、実装時は「構造体 + 関数群（モジュール）」で同等の責務分割を行う。
+
+### 1. KioskApplication
+
+- 役割: アプリケーション全体の起動、メインループ、メニュー分岐の制御
+- 担当関数:
+
+```c
+int runMainLoop(void);
+// 引数: なし
+// 返り値: 終了ステータス（0:正常終了、0以外:異常終了）
+
+int showMainMenu(void);
+// 引数: なし
+// 返り値: ユーザーが選択したメニュー番号
+
+void handleMainMenuChoice(int menuChoice);
+// 引数: menuChoice - メインメニューの選択値
+// 返り値: なし
+```
+
+### 2. PurchaseService
+
+- 役割: 商品選択、購入可否判定、金額計算、購入実行
+- 担当関数:
+
+```c
+int showProductList(void);
+// 引数: なし
+// 返り値: 表示処理結果（0:成功、0以外:失敗）
+
+int selectProductId(void);
+// 引数: なし
+// 返り値: 選択された商品ID（無効入力時は負値）
+
+int inputPurchaseQuantity(int selectedProductId);
+// 引数: selectedProductId - 対象商品ID
+// 返り値: 入力された購入個数（無効入力時は負値）
+
+int inputInsertedAmount(void);
+// 引数: なし
+// 返り値: 投入金額（無効入力時は負値）
+
+int canPurchase(int selectedProductId, int selectedQuantity, int insertedAmount);
+// 引数: selectedProductId - 対象商品ID
+//       selectedQuantity - 購入個数
+//       insertedAmount - 投入金額
+// 返り値: 購入可否（1:購入可能、0:購入不可）
+
+int calculateTotalPrice(int unitPrice, int selectedQuantity);
+// 引数: unitPrice - 商品単価
+//       selectedQuantity - 購入個数
+// 返り値: 合計金額
+
+int calculateChange(int insertedAmount, int totalPrice);
+// 引数: insertedAmount - 投入金額
+//       totalPrice - 合計金額
+// 返り値: つり銭額
+
+int executePurchase(int selectedProductId, int selectedQuantity, int insertedAmount);
+// 引数: selectedProductId - 対象商品ID
+//       selectedQuantity - 購入個数
+//       insertedAmount - 投入金額
+// 返り値: 購入処理結果（0:成功、0以外:失敗）
+```
+
+### 3. AdminService
+
+- 役割: 管理者認証と管理メニュー分岐制御
+- 担当関数:
+
+```c
+int authenticateAdmin(const char* adminPasswordInput);
+// 引数: adminPasswordInput - 入力された管理者パスワード
+// 返り値: 認証結果（1:成功、0:失敗）
+
+int showAdminMenu(void);
+// 引数: なし
+// 返り値: 管理者メニューの選択値
+
+void handleAdminMenuChoice(int menuChoice);
+// 引数: menuChoice - 管理者メニューの選択値
+// 返り値: なし
+```
+
+### 4. StockService
+
+- 役割: 在庫一覧表示、在庫更新、補充
+- 担当関数:
+
+```c
+int showStockList(void);
+// 引数: なし
+// 返り値: 表示処理結果（0:成功、0以外:失敗）
+
+int updateStock(int selectedProductId, int updatedStock);
+// 引数: selectedProductId - 更新対象の商品ID
+//       updatedStock - 更新後在庫数
+// 返り値: 更新処理結果（0:成功、0以外:失敗）
+
+int restockProduct(int selectedProductId, int addQuantity);
+// 引数: selectedProductId - 補充対象の商品ID
+//       addQuantity - 追加補充数
+// 返り値: 補充処理結果（0:成功、0以外:失敗）
+```
+
+### 5. ReportService
+
+- 役割: 売上履歴・操作ログの読み込みと表示
+- 担当関数:
+
+```c
+int loadSalesHistory(const char* salesCsvPath);
+// 引数: salesCsvPath - 売上CSVパス
+// 返り値: 読み込み結果（0:成功、0以外:失敗）
+
+int showSalesSummary(void);
+// 引数: なし
+// 返り値: 表示処理結果（0:成功、0以外:失敗）
+
+int loadOperationLog(const char* operationLogCsvPath);
+// 引数: operationLogCsvPath - 操作ログCSVパス
+// 返り値: 読み込み結果（0:成功、0以外:失敗）
+
+int showOperationLog(void);
+// 引数: なし
+// 返り値: 表示処理結果（0:成功、0以外:失敗）
+```
+
+### 6. CsvRepository
+
+- 役割: 売上記録・操作ログ・商品マスタの永続化処理
+- 担当関数:
+
+```c
+int appendSalesRecord(int selectedProductId, int selectedQuantity, int unitPrice, int remainingStock);
+// 引数: selectedProductId - 購入商品ID
+//       selectedQuantity - 購入個数
+//       unitPrice - 商品単価
+//       remainingStock - 購入後在庫
+// 返り値: 書き込み結果（0:成功、0以外:失敗）
+
+int appendOperationLog(const char* actionLabel);
+// 引数: actionLabel - 操作内容ラベル
+// 返り値: 書き込み結果（0:成功、0以外:失敗）
+
+int saveProductMaster(void);
+// 引数: なし
+// 返り値: 保存処理結果（0:成功、0以外:失敗）
+```
+
 ---
 
 ## 備考メモ
